@@ -6,12 +6,12 @@
 # 	-t /local/custom_template \
 # 	-o /local/out/custom_generated \
 #     -c /local/custom_template/config.yaml
-# generate:
-# docker run --rm \
-# -v ${PWD}:/local delta generate \
-# -i /local/spec/openapi.yaml \
-# -g go-server-lambda \
-# -o /local/out/generated
+generate:
+	docker run --rm \
+	-v ${PWD}:/local delta generate \
+	-i /local/spec/openapi.yaml \
+	-g go-server-lambda \
+	-o /local/out/generated
 # template:
 # 	docker run --rm \
 # 	-v ${PWD}:/local openapitools/openapi-generator-cli author template \
