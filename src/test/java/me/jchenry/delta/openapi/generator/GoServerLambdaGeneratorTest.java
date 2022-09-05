@@ -25,9 +25,10 @@ public class GoServerLambdaGeneratorTest {
     // https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-cli/src/main/java/org/openapitools/codegen/cmd/Generate.java
     final CodegenConfigurator configurator = new CodegenConfigurator()
               .setGeneratorName("go-server-lambda") // use this codegen library
-              .setInputSpec("../../../modules/openapi-generator/src/test/resources/2_0/petstore.yaml") // sample OpenAPI file
+              // .setInputSpec("../../../modules/openapi-generator/src/test/resources/2_0/petstore.yaml") // sample OpenAPI file
+              .setInputSpec("spec/openapi.yaml")
               // .setInputSpec("https://raw.githubusercontent.com/openapitools/openapi-generator/master/modules/openapi-generator/src/test/resources/2_0/petstore.yaml") // or from the server
-              .setOutputDir("out/go-server-lambda"); // output directory
+              .setOutputDir("target/generated-sources"); // output directory
 
     final ClientOptInput clientOptInput = configurator.toClientOptInput();
     DefaultGenerator generator = new DefaultGenerator();
