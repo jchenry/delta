@@ -13,7 +13,7 @@ import java.io.File;
 public class GoServerLambdaGenerator extends AbstractGoCodegen {
 
   // source folder where to write the files
-  protected String sourceFolder = "src";
+  protected String sourceFolder = "pkg";
   protected String apiVersion = "1.0.0";
   protected String packageVersion = "1.0.0";
 
@@ -92,7 +92,13 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
      */
     apiTemplateFiles.put(
       "api.mustache",   // the template to use
-      ".sample");       // the extension for each file to write
+      ".go");       // the extension for each file to write
+
+      apiDocTemplateFiles.put(
+        "lambda.mustache",   // the template to use
+        ".go");       // the extension for each file to write
+  
+
 
     /**
      * Template Location.  This is the location which templates will be read from.  The generator
@@ -131,7 +137,7 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     //  * Additional Properties.  These values can be passed to the templates and
     //  * are available in models, apis, and supporting files
     //  */
-    // additionalProperties.put("apiVersion", apiVersion);
+    additionalProperties.put("apiVersion", apiVersion);
 
     /**
      * Supporting Files.  You can write single files for the generator with the
@@ -143,15 +149,71 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
       "myFile.sample")                                          // the output file
     );
 
-    // /**
-    //  * Language Specific Primitives.  These types will not trigger imports by
-    //  * the client generator
-    //  */
-    // languageSpecificPrimitives = new HashSet<String>(
-    //   Arrays.asList(
-    //     "Type1",      // replace these with your types
-    //     "Type2")
-    // );
+    /**
+     * Language Specific Primitives.  These types will not trigger imports by
+     * the client generator
+     */
+    languageSpecificPrimitives = new HashSet<>(
+      Arrays.asList(
+              "string",
+              "bool",
+              "uint",
+              "uint32",
+              "uint64",
+              "int",
+              "int32",
+              "int64",
+              "float32",
+              "float64",
+              "complex64",
+              "complex128",
+              "rune",
+              "byte",
+              "map[string]interface{}",
+              "interface{}"
+      )
+);
+        typeMapping.clear();
+        typeMapping.put("integer", "int32");
+        typeMapping.put("long", "int64");
+        typeMapping.put("number", "float32");
+        typeMapping.put("float", "float32");
+        typeMapping.put("double", "float64");
+        typeMapping.put("decimal", "float64");
+        typeMapping.put("boolean", "bool");
+        typeMapping.put("string", "string");
+        typeMapping.put("UUID", "string");
+        typeMapping.put("URI", "string");
+        typeMapping.put("date", "string");
+        typeMapping.put("DateTime", "time.Time");
+        typeMapping.put("password", "string");
+        typeMapping.put("File", "*os.File");
+        typeMapping.put("file", "*os.File");
+        typeMapping.put("binary", "*os.File");
+        typeMapping.put("ByteArray", "string");
+        typeMapping.put("null", "nil");
+        // A 'type: object' OAS schema without any declared property is
+        // (per JSON schema specification) "an unordered set of properties
+        // mapping a string to an instance".
+        // Hence map[string]interface{} is the proper implementation in golang.
+        // Note: OpenAPITools uses the same token 'object' for free-form objects
+        // and arbitrary types. A free form object is implemented in golang as
+        // map[string]interface{}, whereas an arbitrary type is implemented
+        // in golang as interface{}.
+        // See issue #5387 for more details.
+        typeMapping.put("object", "map[string]interface{}");
+        typeMapping.put("AnyType", "interface{}");
+
+        importMapping = new HashMap<>();
+
+        cliOptions.clear();
+        cliOptions.add(new CliOption(CodegenConstants.PACKAGE_NAME, "Go package name (convention: lowercase).")
+                .defaultValue("openapi"));
+        cliOptions.add(new CliOption(CodegenConstants.PACKAGE_VERSION, "Go package version.")
+                .defaultValue("1.0.0"));
+        cliOptions.add(new CliOption(CodegenConstants.HIDE_GENERATION_TIMESTAMP, CodegenConstants.HIDE_GENERATION_TIMESTAMP_DESC)
+                .defaultValue(Boolean.TRUE.toString()));
+
   }
 
 
@@ -171,6 +233,22 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
   public String apiFileFolder() {
     return outputFolder + "/" + sourceFolder + "/" + apiPackage().replace('.', File.separatorChar);
   }
+
+  @Override
+  public String apiDocFilename(String templateName, String tag) {
+      String docExtension = getDocExtension();
+      String suffix = docExtension != null ? docExtension : apiDocTemplateFiles().get(templateName);
+      return outputFolder + File.separator + "cmd" + File.separator + toApiDocFilename(tag) + File.separator+"main" + suffix;
+  }
+
+  
+
+
+  @Override
+  public String apiDocFileFolder() {
+      return outputFolder + "/"+"cmd";
+  }
+
 
   public void setSourceFolder(String sourceFolder) {
     this.sourceFolder = sourceFolder;
@@ -208,6 +286,8 @@ public void setPackageVersion(String packageVersion) {
       }
     }
 
+      // supportingFiles.add(new SupportingFile("main.mustache", "", "main.go"));
+      // supportingFiles.add(new SupportingFile("go.mod.mustache", "", "go.mod"));
 
 
 
