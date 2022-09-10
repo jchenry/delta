@@ -1,13 +1,13 @@
 .PHONY: all build clean
 
 build:
-        mvn package 
+	mvn package 
 clean:   
-        rm linklist 
+	rm linklist 
 
 docker: build
-        docker build -t r.j5y.xyz/delta:latest . 
-        # docker build -t diskstation:5000/linklist .
+	docker build -t r.j5y.xyz/delta:latest . 
+# docker build -t diskstation:5000/linklist .
 
 docker-run:
 	docker run --rm \
