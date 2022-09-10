@@ -52,44 +52,33 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     super();
 
     modifyFeatureSet(features -> features
-    .includeDocumentationFeatures(DocumentationFeature.Readme)
-    .wireFormatFeatures(EnumSet.of(WireFormatFeature.JSON, WireFormatFeature.XML))
-    .securityFeatures(EnumSet.noneOf(
-            SecurityFeature.class
-    ))
-    .excludeGlobalFeatures(
-            GlobalFeature.XMLStructureDefinitions,
-            GlobalFeature.Callbacks,
-            GlobalFeature.LinkObjects,
-            GlobalFeature.ParameterStyling
-    )
-    .excludeSchemaSupportFeatures(
-            SchemaSupportFeature.Polymorphism
-    )
-    .excludeParameterFeatures(
-            ParameterFeature.Cookie
-    )
-);
+      .includeDocumentationFeatures(DocumentationFeature.Readme)
+      .wireFormatFeatures(EnumSet.of(WireFormatFeature.JSON, WireFormatFeature.XML))
+      .securityFeatures(EnumSet.noneOf(
+              SecurityFeature.class
+      ))
+      .excludeGlobalFeatures(
+              GlobalFeature.XMLStructureDefinitions,
+              GlobalFeature.Callbacks,
+              GlobalFeature.LinkObjects,
+              GlobalFeature.ParameterStyling
+      )
+      .excludeSchemaSupportFeatures(
+              SchemaSupportFeature.Polymorphism
+      )
+      .excludeParameterFeatures(
+              ParameterFeature.Cookie
+      )
+    );
 
 
-    // set the output folder here
     outputFolder = "generated-code/go-server-lambda";
 
-    /**
-     * Models.  You can write model files using the modelTemplateFiles map.
-     * if you want to create one template for file, you can do so here.
-     * for multiple files for model, just put another entry in the `modelTemplateFiles` with
-     * a different extension
-     */
     modelTemplateFiles.put(
       "model.mustache", // the template to use
       ".go");       // the extension for each file to write
 
-    /**
-     * Api classes.  You can write classes for each Api file with the apiTemplateFiles map.
-     * as with models, add multiple entries with different extensions for multiple files per
-     * class
-     */
+    
     apiTemplateFiles.put(
       "api.mustache",   // the template to use
       ".go");       // the extension for each file to write
@@ -100,43 +89,25 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
   
 
 
-    /**
-     * Template Location.  This is the location which templates will be read from.  The generator
-     * will use the resource stream to attempt to read the templates.
-     */
+   
     templateDir = "go-server-lambda";
 
-    // /**
-    //  * Api Package.  Optional, if needed, this can be used in templates
-    //  */
-    apiPackage = "org.openapitools.api";
+    apiPackage = "api";
 
-    // /**
-    //  * Model Package.  Optional, if needed, this can be used in templates
-    //  */
-    modelPackage = "org.openapitools.model";
+    modelPackage = "model";
 
-    /**
-     * Reserved words.  Override this with reserved words specific to your language
-     */
-    setReservedWordsLowerCase(
-      Arrays.asList(
-              // data type
-              "string", "bool", "uint", "uint8", "uint16", "uint32", "uint64",
-              "int", "int8", "int16", "int32", "int64", "float32", "float64",
-              "complex64", "complex128", "rune", "byte", "uintptr",
+    setReservedWordsLowerCase(Arrays.asList(
+      // data type
+      "string", "bool", "uint", "uint8", "uint16", "uint32", "uint64",
+      "int", "int8", "int16", "int32", "int64", "float32", "float64",
+      "complex64", "complex128", "rune", "byte", "uintptr",
 
-              "break", "default", "func", "interface", "select",
-              "case", "defer", "go", "map", "struct",
-              "chan", "else", "goto", "package", "switch",
-              "const", "fallthrough", "if", "range", "type",
-              "continue", "for", "import", "return", "var", "error", "nil")
-      // Added "error" as it's used so frequently that it may as well be a keyword
+      "break", "default", "func", "interface", "select",
+      "case", "defer", "go", "map", "struct",
+      "chan", "else", "goto", "package", "switch",
+      "const", "fallthrough", "if", "range", "type",
+      "continue", "for", "import", "return", "var", "error", "nil")
 );
-    // /**
-    //  * Additional Properties.  These values can be passed to the templates and
-    //  * are available in models, apis, and supporting files
-    //  */
     additionalProperties.put("apiVersion", apiVersion);
 
     /**
@@ -144,10 +115,10 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
      * entire object tree available.  If the input file has a suffix of `.mustache
      * it will be processed by the template engine.  Otherwise, it will be copied
      */
-    supportingFiles.add(new SupportingFile("myFile.mustache",   // the input template or file
-      "",                                                       // the destination folder, relative `outputFolder`
-      "myFile.sample")                                          // the output file
-    );
+    // supportingFiles.add(new SupportingFile("myFile.mustache",   // the input template or file
+    //   "",                                                       // the destination folder, relative `outputFolder`
+    //   "myFile.sample")                                          // the output file
+    // );
 
     /**
      * Language Specific Primitives.  These types will not trigger imports by
@@ -192,15 +163,6 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
         typeMapping.put("binary", "*os.File");
         typeMapping.put("ByteArray", "string");
         typeMapping.put("null", "nil");
-        // A 'type: object' OAS schema without any declared property is
-        // (per JSON schema specification) "an unordered set of properties
-        // mapping a string to an instance".
-        // Hence map[string]interface{} is the proper implementation in golang.
-        // Note: OpenAPITools uses the same token 'object' for free-form objects
-        // and arbitrary types. A free form object is implemented in golang as
-        // map[string]interface{}, whereas an arbitrary type is implemented
-        // in golang as interface{}.
-        // See issue #5387 for more details.
         typeMapping.put("object", "map[string]interface{}");
         typeMapping.put("AnyType", "interface{}");
 
@@ -217,18 +179,10 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
   }
 
 
-  /**
-   * Location to write model files.  You can use the modelPackage() as defined when the class is
-   * instantiated
-   */
   public String modelFileFolder() {
     return outputFolder + "/" + sourceFolder + "/" + modelPackage().replace('.', File.separatorChar);
   }
 
-  /**
-   * Location to write api files.  You can use the apiPackage() as defined when the class is
-   * instantiated
-   */
   @Override
   public String apiFileFolder() {
     return outputFolder + "/" + sourceFolder + "/" + apiPackage().replace('.', File.separatorChar);
