@@ -5,11 +5,8 @@ COPY pom.xml /home/app
 RUN mvn -f /home/app/pom.xml clean package
 
 FROM openapitools/openapi-generator-cli
-# RUN mkdir -p /opt/openapi-generator/modules/go-server-lambda-openapi-generator/target/
-
 COPY --from=build /home/app/target/go-server-lambda-openapi-generator-0.0.0-SNAPSHOT.jar \
      /opt/openapi-generator/modules/go-server-lambda-openapi-generator/target/go-server-lambda-openapi-generator-0.0.0-SNAPSHOT.jar
-
 COPY spec/openapi.yaml /opt/openapi.yaml
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /usr/local/bin/openapi-generator
