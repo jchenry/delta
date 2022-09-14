@@ -1,28 +1,89 @@
 
-# This is a sample api mustache template.  It is representing a fictitious
-# language and won't be usable or compile to anything without lots of changes.
-# Use it as an example.  You can access the variables in the generator object
-# like such:
+{{>partial_header}}
 
-# use the package from the `apiPackage` variable
-package: {{package}}
+package {{packageName}}
 
-# operations block
+import "github.com/matryer/way"
+import "net/http"
+
+
 {{#operations}}
-classname: {{classname}}
-
-# loop over each operation in the API:
 {{#operation}}
+//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - {{{summary}}}
+func Handle{{nickname}}(w http.ResponseWriter, r *http.Request) {
+/**
+    //{{httpMethod}} - {{{path}}}
+    // operationId: {{operationId}}
+    Parameters: 
+	{{#allParams}}
+        {{paramName}} - {{dataType}}
+	{{/allParams}}
 
-# each operation has an `operationId`:
-operationId: {{operationId}}
+    Returns
+*/
+{{#hasFormParams}}
+{{#isMultipart}}
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)  
+		return
+	}
+{{/isMultipart}}
+{{^isMultipart}}
+	if err := r.ParseForm(); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)  
+		return
+	}
+{{/isMultipart}}
+{{/hasFormParams}}
 
-# and parameters:
+
+{{#hasQueryParams}}
+	query := r.URL.Query()
+{{/hasQueryParams}}
 {{#allParams}}
-{{paramName}}: {{dataType}}
+	{{#isPathParam}}
+	{{paramName}}Param, err := PathParam(r.Context(), way.Param, "{{paramName}}",{{required}}, "{{dataType}}")
+	if err != nil {
+		http.Error(w, err.Error() ,http.StatusBadRequest)
+	}
+	{{/isPathParam}}
+	{{#isQueryParam}}
+	{{paramName}}Param, err := QueryParam(query, "{{paramName}}", {{required}}, "{{dataType}}")	
+	if err != nil {
+		http.Error(w, err.Error() ,http.StatusBadRequest)
+	}
+	{{/isQueryParam}}
+	{{#isFormParam}}
+	{{paramName}}Param, err := FormParam(r.Form, "{{paramName}}", {{required}}, "{{dataType}}")	
+	if err != nil {
+		http.Error(w, err.Error() ,http.StatusBadRequest)
+	}
+	{{/isFormParam}}
+	{{#isHeaderParam}}
+	//func HeaderParam(h http.Header, paramName string, required bool, dt string) (p any, err error) {
+	{{paramName}}Param, err := HeaderParam(r.Header, "{{paramName}}", {{required}}, "{{dataType}}")	
+	if err != nil {
+		http.Error(w, err.Error() ,http.StatusBadRequest)
+	}
+	{{/isHeaderParam}}
+	{{#isBodyParam}}
+	//func BodyParam(body io.ReadCloser, p any, v func(p any) error) (err error) {
+	var {{paramName}}Param {{dataType}}
+	err := BodyParam(r.Body, &{{paramName}}Param, func(p any) error{return nil} )
+	if err != nil {
+		http.Error(w, err.Error() ,http.StatusBadRequest)
+	}
+	//{{paramName}}Param, err := BodyParam(r.Context(), "{{paramName}}", {{required}}, "{{dataType}}")	
+	{{/isBodyParam}}
 {{/allParams}}
-
+	result, err := {{nickname}}(r.Context(){{#allParams}}, {{paramName}}Param{{/allParams}})
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code,{{#addResponseHeaders}} result.Headers,{{/addResponseHeaders}} w)
+}
 {{/operation}}
-
-# end of operations block
 {{/operations}}
+
