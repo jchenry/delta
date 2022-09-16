@@ -56,7 +56,6 @@ func Handle{{nickname}}({{nickname}} func(ctx context.Context{{#allParams}}, {{p
 		}
 		{{/isFormParam}}
 		{{#isHeaderParam}}
-		//func HeaderParam(h http.Header, paramName string, required bool, dt string) (p any, err error) {
 		var {{paramName}}Param {{dataType}}
 		err = HeaderParam(r.Header, "{{paramName}}", &{{paramName}}Param, {{required}})	
 		if err != nil {
@@ -65,13 +64,11 @@ func Handle{{nickname}}({{nickname}} func(ctx context.Context{{#allParams}}, {{p
 		}
 		{{/isHeaderParam}}
 		{{#isBodyParam}}
-		//func BodyParam(body io.ReadCloser, p any, v func(p any) error) (err error) {
 		var {{paramName}}Param {{dataType}}
 		err = BodyParam(r.Body, &{{paramName}}Param, func(p any) error{return nil} )
 		if err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 		}
-		//{{paramName}}Param, err = BodyParam(r.Context(), "{{paramName}}", {{required}}, "{{dataType}}")	
 		{{/isBodyParam}}
 	{{/allParams}}
 		result, err := {{nickname}}(r.Context(){{#allParams}}, {{paramName}}Param{{/allParams}})
