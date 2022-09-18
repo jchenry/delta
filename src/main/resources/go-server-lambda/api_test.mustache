@@ -1,0 +1,13 @@
+{{>partial_header}}
+package {{packageName}}
+
+import "testing"
+
+{{#operations}}
+{{#operation}}
+    //{{#isDeprecated}}DEPRECATED{{/isDeprecated}}
+    func TestHandle{{nickname}}(t *testing.T){
+
+    }
+{{/operation}}
+{{/operations}}

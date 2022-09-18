@@ -68,27 +68,23 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
 
     outputFolder = "generated-code/go-server-lambda";
 
-    modelTemplateFiles.put(
-        "model.mustache", // the template to use
-        ".go"); // the extension for each file to write
+    modelTemplateFiles.put("model.mustache",".go");
 
-    apiTemplateFiles.put(
-        "api.mustache", // the template to use
-        ".go"); // the extension for each file to write
+    apiTemplateFiles.put("api.mustache",".go"); 
+    apiTemplateFiles.put("api_test.mustache", "_test.go");
 
-    // this overloads the function of API Documentation templates
-    // to allow for a main entry point to be created
-    apiDocTemplateFiles.put(
-        "lambda.mustache", // the template to use
-        ".go"); // the extension for each file to write
-
+    supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
+    // supportingFiles.add(new SupportingFile("routes.mustache", "pkg/api", "routes.go"));
     
+   // this overloads the function of API Documentation templates
+   // to allow for a main entry point to be created
+   // apiDocTemplateFiles.put( "lambda.mustache", ".go"); // the extension for each file to write
 
     templateDir = "go-server-lambda";
 
     apiPackage = "api";
 
-    modelPackage = "model";
+    modelPackage = "api";
 
     setReservedWordsLowerCase(Arrays.asList(
         // data type
