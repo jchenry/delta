@@ -3,14 +3,17 @@
 
 package {{packageName}}
 
-import "github.com/matryer/way"
 import "net/http"
 import "context"
 
 {{#operations}}
 {{#operation}}
-//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - {{{summary}}}
-func Handle{{nickname}}({{nickname}} func(ctx context.Context{{#allParams}}, {{paramName}}Param {{dataType}}{{/allParams}})(ImplResponse, error)) http.HandlerFunc {
+
+//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
+type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{dataType}}{{/allParams}})(Response, error)
+
+//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Web handler for {{{summary}}}
+func Handle{{nickname}}( param func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 	var err error
 	{{#hasFormParams}}
@@ -33,40 +36,35 @@ func Handle{{nickname}}({{nickname}} func(ctx context.Context{{#allParams}}, {{p
 	{{#allParams}}
 		{{#isPathParam}}
 		var {{paramName}}Param {{dataType}}
-		err = PathParam(r.Context(), way.Param, &{{paramName}}Param, "{{paramName}}",{{required}})
-		if err != nil {
+		if err = PathParam(r.Context(), param, &{{paramName}}Param, "{{paramName}}",{{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isPathParam}}
 		{{#isQueryParam}}
 		var {{paramName}}Param {{dataType}}
-		err = QueryParam(query, "{{paramName}}", {{paramName}}Param, {{required}})	
-		if err != nil {
+		if err = QueryParam(query, "{{paramName}}", {{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isQueryParam}}
 		{{#isFormParam}}
 		var {{paramName}}Param {{dataType}}
-		err = FormParam(r.Form, "{{paramName}}", &{{paramName}}Param, {{required}})	
-		if err != nil {
+		if err = FormParam(r.Form, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isFormParam}}
 		{{#isHeaderParam}}
 		var {{paramName}}Param {{dataType}}
-		err = HeaderParam(r.Header, "{{paramName}}", &{{paramName}}Param, {{required}})	
-		if err != nil {
+		if err = HeaderParam(r.Header, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isHeaderParam}}
 		{{#isBodyParam}}
 		var {{paramName}}Param {{dataType}}
-		err = BodyParam(r.Body, &{{paramName}}Param, func(p any) error{return nil} )
-		if err != nil {
+		if err = BodyParam(r.Body, &{{paramName}}Param, func(p any) error{/*TODO*/ return nil} );err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 		}
 		{{/isBodyParam}}
