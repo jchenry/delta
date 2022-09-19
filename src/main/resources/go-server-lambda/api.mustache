@@ -5,6 +5,8 @@ package {{packageName}}
 
 import "net/http"
 import "context"
+import "encoding/json"
+
 
 {{#operations}}
 {{#operation}}
@@ -75,7 +77,11 @@ func Handle{{nickname}}( param func(ctx context.Context, paramName string) strin
 			return
 		}
 		// If no error, encode the body and the result code
-		EncodeJSONResponse(result.Body, &result.Code,{{#addResponseHeaders}} result.Headers,{{/addResponseHeaders}} w)
+		//EncodeJSONResponse(result.Body, &result.Code,{{#addResponseHeaders}} result.Headers,{{/addResponseHeaders}} w)
+		w.WriteHeader(result.Code)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result.Body)
+
 	}
 }
 	{{/operation}}
