@@ -7,6 +7,7 @@ build:
 	mvn package 
 clean:   
 	rm -rf target 
+	rm -rf out
 
 docker: 
 	docker build -t r.j5y.xyz/delta:latest . 
@@ -24,6 +25,7 @@ docker-run:
 
 docker-operations:
 	docker run --rm \
-	-v ${PWD}:/local r.j5y.xyz/delta:latest generate -g go \
+	-v ${PWD}:/local \
+	r.j5y.xyz/delta:latest generate -g go \
 	-i /local/spec/openapi.yaml \
     --global-property debugOpenAPI=true
