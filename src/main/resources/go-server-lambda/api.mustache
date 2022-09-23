@@ -17,6 +17,13 @@ type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Web handler for {{{summary}}}
 func Handle{{nickname}}( param func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method =="{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+
+
 	var err error
 	{{#hasFormParams}}
 	{{#isMultipart}}
