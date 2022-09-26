@@ -1,0 +1,38 @@
+{{>partial_header}}
+package main
+
+/**
+import (
+	"io"
+	"net/http"
+	"os"
+
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
+	"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/operations"
+
+)
+
+type MyEvent struct {
+	Name string `json:"name"`
+}
+
+func fn(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hello")
+}
+
+func main() {
+	http.HandleFunc("/", fn)
+	if runtimeURI := os.Getenv("AWS_LAMBDA_RUNTIME_API"); runtimeURI != "" {
+		lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
+		// lambda.Start(HandleRequest)
+	} else {
+		http.ListenAndServe(":8080", http.DefaultServeMux)
+	}
+}
+*/
+
+func main() {
+}
+
+

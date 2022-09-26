@@ -1,20 +1,34 @@
 
 {{>partial_header}}
 
-package {{packageName}}
+package main
 
-import "net/http"
-import "context"
-import "encoding/json"
+import ("net/http"
+"context"
+ "encoding/json"
+
+"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/api"
+//"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"
+
+
+{{#operations}}
+{{#operation}}
+{{#allParams}}{{^isPrimitiveType}}
+"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"
+{{/isPrimitiveType}}{{/allParams}}
+{{/operation}}
+{{/operations}}
+)
+
 
 
 {{#operations}}
 {{#operation}}
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
-type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{dataType}}{{/allParams}})(Response, error)
+type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{^isPrimitiveType}}{{^isContainer}}model.{{/isContainer}}{{/isPrimitiveType}}{{dataType}}{{/allParams}})(api.Response, error)
 
-//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Web handler for {{{summary}}}
+//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Generates web handler for {{{summary}}}
 func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method =="{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}" {
@@ -41,37 +55,33 @@ func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) s
 		query := r.URL.Query()
 	{{/hasQueryParams}}
 	{{#allParams}}
+		var {{paramName}}Param {{^isPrimitiveType}}{{^isContainer}}model.{{/isContainer}}{{/isPrimitiveType}}{{dataType}}
 		{{#isPathParam}}
-		var {{paramName}}Param {{dataType}}
-		if err = PathParam(r.Context(), pathParam, &{{paramName}}Param, "{{paramName}}",{{required}}); err != nil {
+		if err = api.PathParam(r.Context(), pathParam, &{{paramName}}Param, "{{paramName}}",{{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isPathParam}}
 		{{#isQueryParam}}
-		var {{paramName}}Param {{dataType}}
-		if err = QueryParam(query, "{{paramName}}", {{paramName}}Param, {{required}}); err != nil {
+		if err = api.QueryParam(query, "{{paramName}}", {{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isQueryParam}}
 		{{#isFormParam}}
-		var {{paramName}}Param {{dataType}}
-		if err = FormParam(r.Form, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
+		if err = api.FormParam(r.Form, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isFormParam}}
 		{{#isHeaderParam}}
-		var {{paramName}}Param {{dataType}}
-		if err = HeaderParam(r.Header, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
+		if err = api.HeaderParam(r.Header, "{{paramName}}", &{{paramName}}Param, {{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 			return 
 		}
 		{{/isHeaderParam}}
 		{{#isBodyParam}}
-		var {{paramName}}Param {{dataType}}
-		if err = BodyParam(r.Body, &{{paramName}}Param, func(p any) error{/*TODO*/ return nil} );err != nil {
+		if err = api.BodyParam(r.Body, &{{paramName}}Param, func(p any) error{/*TODO*/ return nil} );err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
 		}
 		{{/isBodyParam}}

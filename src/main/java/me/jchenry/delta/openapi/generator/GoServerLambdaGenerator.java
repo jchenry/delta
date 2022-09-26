@@ -9,6 +9,10 @@ import org.openapitools.codegen.meta.features.*;
 
 import java.util.*;
 import java.io.File;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+
 
 public class GoServerLambdaGenerator extends AbstractGoCodegen {
 
@@ -69,22 +73,26 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     outputFolder = "generated-code/go-server-lambda";
 
     modelTemplateFiles.put("model.mustache",".go");
-
+   
     apiTemplateFiles.put("api.mustache",".go"); 
     apiTemplateFiles.put("api_test.mustache", "_test.go");
+    apiTemplateFiles.put( "api_lmb.mustache", "_main.go"); // the extension for each file to write
 
     supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
+    supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations",".keep")); 
+
+    // supportingFiles.add(new SupportingFile("main.mustache", "cmd/", "main.go"));
+
     // supportingFiles.add(new SupportingFile("routes.mustache", "pkg/api", "routes.go"));
     
    // this overloads the function of API Documentation templates
    // to allow for a main entry point to be created
-   // apiDocTemplateFiles.put( "lambda.mustache", ".go"); // the extension for each file to write
 
     templateDir = "go-server-lambda";
 
     apiPackage = "api";
 
-    modelPackage = "api";
+    modelPackage = "model";
 
     setReservedWordsLowerCase(Arrays.asList(
         // data type
@@ -167,27 +175,39 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
 
   }
 
+  // This tags each operation with its own tag so it may be generated seperately. 
+  @Override
+  public void preprocessOpenAPI(OpenAPI openAPI) {
+    for (String path : openAPI.getPaths().keySet()) {
+      PathItem config =  openAPI.getPaths().get(path);
+      for (Operation operation : config.readOperations()){
+        operation.setTags(Arrays.asList(operation.getOperationId()));
+      }
+    }
+    super.preprocessOpenAPI(openAPI);
+  }
+
+  
   public String modelFileFolder() {
     return outputFolder + "/" + sourceFolder + "/" + modelPackage().replace('.', File.separatorChar);
   }
 
   @Override
+  public String apiFilename(String templateName, String tag) {
+      String suffix = apiTemplateFiles().get(templateName);
+      return apiFileFolder() + File.separator + tag +File.separator+ toApiFilename(tag) + suffix;
+  }
+  
+  @Override
   public String apiFileFolder() {
-    return outputFolder + "/" + sourceFolder + "/" + apiPackage().replace('.', File.separatorChar);
+    return CmdFolder();
   }
 
-  @Override
-  public String apiDocFilename(String templateName, String tag) {
-    String docExtension = getDocExtension();
-    String suffix = docExtension != null ? docExtension : apiDocTemplateFiles().get(templateName);
-    return outputFolder + File.separator + "cmd" + File.separator + toApiDocFilename(tag) + File.separator + "main"
-        + suffix;
+  private String CmdFolder(){
+    return outputFolder + "/" + "cmd"; 
   }
 
-  @Override
-  public String apiDocFileFolder() {
-    return outputFolder + "/" + "cmd";
-  }
+
 
   public void setSourceFolder(String sourceFolder) {
     this.sourceFolder = sourceFolder;
@@ -224,7 +244,6 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     }
   }
 
-  // supportingFiles.add(new SupportingFile("main.mustache", "", "main.go"));
   // supportingFiles.add(new SupportingFile("go.mod.mustache", "", "go.mod"));
 
 }

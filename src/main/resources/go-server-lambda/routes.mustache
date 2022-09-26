@@ -1,0 +1,14 @@
+{{>partial_header}}
+package {{packageName}}
+
+import "net/http"
+
+
+func Routes(register func(method, pattern string, fn http.HandlerFunc)){
+
+{{#operations}}
+{{#operation}}
+// {{nickname}}
+{{/operation}}
+{{/operations}}
+}
