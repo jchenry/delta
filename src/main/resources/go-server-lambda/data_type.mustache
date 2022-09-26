@@ -1,0 +1,1 @@
+{{^isPrimitiveType}}{{^isArray}}model.{{dataType}}{{/isArray}}{{#isArray}}[]{{#items}}{{#isModel}}model.{{/isModel}}{{baseType}}{{/items}}{{/isArray}}{{/isPrimitiveType}}{{#isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}

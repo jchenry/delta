@@ -13,9 +13,12 @@ import ("net/http"
 
 {{#operations}}
 {{#operation}}
-{{#allParams}}{{^isPrimitiveType}}
-"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"
-{{/isPrimitiveType}}{{/allParams}}
+{{#allParams}}
+{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}
+{{#isArray}}{{#items}}{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}{{/items}}{{/isArray}}
+
+
+{{/allParams}}
 {{/operation}}
 {{/operations}}
 )
@@ -26,7 +29,7 @@ import ("net/http"
 {{#operation}}
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
-type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{^isPrimitiveType}}{{^isContainer}}model.{{/isContainer}}{{/isPrimitiveType}}{{dataType}}{{/allParams}})(api.Response, error)
+type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{> data_type}}{{/allParams}})(api.Response, error)
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Generates web handler for {{{summary}}}
 func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
@@ -55,7 +58,7 @@ func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) s
 		query := r.URL.Query()
 	{{/hasQueryParams}}
 	{{#allParams}}
-		var {{paramName}}Param {{^isPrimitiveType}}{{^isContainer}}model.{{/isContainer}}{{/isPrimitiveType}}{{dataType}}
+		var {{paramName}}Param {{> data_type}}
 		{{#isPathParam}}
 		if err = api.PathParam(r.Context(), pathParam, &{{paramName}}Param, "{{paramName}}",{{required}}); err != nil {
 			http.Error(w, err.Error() ,http.StatusBadRequest)
