@@ -77,14 +77,9 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     apiTemplateFiles.put("api.mustache",".go"); 
     apiTemplateFiles.put("api_test.mustache", "_test.go");
     apiTemplateFiles.put( "api_lmb.mustache", "_main.go"); // the extension for each file to write
-
     supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
     supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations",".keep")); 
 
-    // supportingFiles.add(new SupportingFile("main.mustache", "cmd/", "main.go"));
-
-    // supportingFiles.add(new SupportingFile("routes.mustache", "pkg/api", "routes.go"));
-    
    // this overloads the function of API Documentation templates
    // to allow for a main entry point to be created
 
@@ -107,16 +102,7 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
         "continue", "for", "import", "return", "var", "error", "nil"));
     additionalProperties.put("apiVersion", apiVersion);
 
-    /**
-     * Supporting Files. You can write single files for the generator with the
-     * entire object tree available. If the input file has a suffix of `.mustache
-     * it will be processed by the template engine. Otherwise, it will be copied
-     */
-    // supportingFiles.add(new SupportingFile("myFile.mustache", // the input
-    // template or file
-    // "", // the destination folder, relative `outputFolder`
-    // "myFile.sample") // the output file
-    // );
+  
 
     /**
      * Language Specific Primitives. These types will not trigger imports by
@@ -184,6 +170,7 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
         operation.setTags(Arrays.asList(operation.getOperationId()));
       }
     }
+
     super.preprocessOpenAPI(openAPI);
   }
 
