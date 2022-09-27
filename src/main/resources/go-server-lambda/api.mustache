@@ -3,30 +3,16 @@
 
 package main
 
-import ("net/http"
+import (
+"net/http"
 "context"
- "encoding/json"
-
+"encoding/json"
 "{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/api"
-//"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"
-
-
-{{#operations}}
-{{#operation}}
-{{#allParams}}
+{{#operations}}{{#operation}}{{#allParams}}
 {{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}
 {{#isArray}}{{#items}}{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}{{/items}}{{/isArray}}
-
-
-{{/allParams}}
-{{/operation}}
-{{/operations}}
+{{/allParams}}{{/operation}}{{/operations}}{{#operations}}{{#operation}}
 )
-
-
-
-{{#operations}}
-{{#operation}}
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
 type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{> data_type}}{{/allParams}})(api.Response, error)
