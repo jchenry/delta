@@ -1,38 +1,26 @@
 {{>partial_header}}
+{{#operations}}{{#operation}}
 package main
 
-/**
 import (
-	"io"
 	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/operations"
-
+	"github.com/matryer/way"
 )
 
-type MyEvent struct {
-	Name string `json:"name"`
-}
-
-func fn(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello")
-}
-
 func main() {
-	http.HandleFunc("/", fn)
+	r := way.NewRouter()
+	r.HandleFunc("{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}", "{{path}}", Handle{{nickname}}(way.Param, operations.{{nickname}}))
 	if runtimeURI := os.Getenv("AWS_LAMBDA_RUNTIME_API"); runtimeURI != "" {
-		lambda.Start(httpadapter.New(http.DefaultServeMux).ProxyWithContext)
-		// lambda.Start(HandleRequest)
+		lambda.Start(httpadapter.New(r).ProxyWithContext)
 	} else {
-		http.ListenAndServe(":8080", http.DefaultServeMux)
+		http.ListenAndServe(":8080", r)
 	}
 }
-*/
-
-func main() {
-}
-
+{{/operation}}
+{{/operations}}
 
