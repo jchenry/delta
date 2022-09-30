@@ -12,7 +12,7 @@ import java.io.File;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
-
+import io.swagger.v3.oas.models.Paths;
 
 public class GoServerLambdaGenerator extends AbstractGoCodegen {
 
@@ -164,13 +164,20 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
   // This tags each operation with its own tag so it may be generated seperately. 
   @Override
   public void preprocessOpenAPI(OpenAPI openAPI) {
+
+    Paths newPaths = new Paths();
+
     for (String path : openAPI.getPaths().keySet()) {
       PathItem config =  openAPI.getPaths().get(path);
       for (Operation operation : config.readOperations()){
         operation.setTags(Arrays.asList(operation.getOperationId()));
       }
+
+      String wayPath = path.replace('{', ':').replace("}", "");
+      newPaths.put(wayPath, config);
     }
 
+    openAPI.setPaths(newPaths);
     super.preprocessOpenAPI(openAPI);
   }
 
