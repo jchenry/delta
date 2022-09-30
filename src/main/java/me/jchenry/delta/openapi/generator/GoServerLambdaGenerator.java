@@ -76,7 +76,7 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
    
     apiTemplateFiles.put("api.mustache",".go"); 
     apiTemplateFiles.put("api_test.mustache", "_test.go");
-    apiTemplateFiles.put( "api_lmb.mustache", "_main.go"); // the extension for each file to write
+    apiTemplateFiles.put( "lambda.mustache", "_main.go"); // the extension for each file to write
     supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
     supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations",".keep")); 
 

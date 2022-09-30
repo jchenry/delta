@@ -15,7 +15,7 @@ import (
 )
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
-type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}}Param {{> data_type}}{{/allParams}})(api.Response, error)
+type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error)
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Generates web handler for {{{summary}}}
 func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
