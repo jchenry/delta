@@ -77,6 +77,8 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     apiTemplateFiles.put("api.mustache",".go"); 
     apiTemplateFiles.put("api_test.mustache", "_test.go");
     apiTemplateFiles.put( "lambda.mustache", "_main.go"); // the extension for each file to write
+    // apiTemplateFiles.put( "operation.mustache", ".go"); // the extension for each file to write
+
     supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
     supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations",".keep")); 
 
@@ -189,7 +191,12 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
   @Override
   public String apiFilename(String templateName, String tag) {
       String suffix = apiTemplateFiles().get(templateName);
-      return apiFileFolder() + File.separator + tag +File.separator+ toApiFilename(tag) + suffix;
+      if (templateName == "operation.mustache"){
+        return outputFolder + File.separator+ "pkg" + File.separator + "operations" +File.separator+ toApiFilename(tag) + suffix;
+
+      } else {
+        return apiFileFolder() + File.separator + tag +File.separator+ toApiFilename(tag) + suffix;
+      }
   }
   
   @Override

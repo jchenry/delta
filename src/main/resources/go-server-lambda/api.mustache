@@ -84,7 +84,7 @@ func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) s
 		//EncodeJSONResponse(result.Body, &result.Code,{{#addResponseHeaders}} result.Headers,{{/addResponseHeaders}} w)
 		w.WriteHeader(result.Code)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result.Body)
+		_=json.NewEncoder(w).Encode(result.Body)
 
 	}
 }

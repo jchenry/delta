@@ -5,6 +5,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
@@ -18,7 +19,16 @@ func main() {
 	if runtimeURI := os.Getenv("AWS_LAMBDA_RUNTIME_API"); runtimeURI != "" {
 		lambda.Start(httpadapter.New(r).ProxyWithContext)
 	} else {
-		http.ListenAndServe(":8080", r)
+		server := &http.Server{
+			Addr:              ":8080",
+			ReadHeaderTimeout: 3 * time.Second,
+			Handler:r,
+		}
+
+		err := server.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}	
 	}
 }
 {{/operation}}

@@ -1,0 +1,21 @@
+package operations
+
+
+import (
+"context"
+"net/http"
+
+"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/api"
+{{#operations}}{{#operation}}{{#allParams}}
+{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}
+{{#isArray}}{{#items}}{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}{{/items}}{{/isArray}}
+{{/allParams}}{{/operation}}{{/operations}}
+)
+{{#operations}}
+{{#operation}}
+func {{nickname}}(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error){
+    return api.Response{Code:http.StatusOK},nil
+}
+{{/operation}}
+{{/operations}}
+
