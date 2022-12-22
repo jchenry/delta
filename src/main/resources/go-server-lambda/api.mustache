@@ -20,7 +20,7 @@ type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}} {{> 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Generates web handler for {{{summary}}}
 func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method =="{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}" {
+		if r.Method !="{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}" {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
