@@ -80,7 +80,7 @@ public class GoServerLambdaGenerator extends AbstractGoCodegen {
     // apiTemplateFiles.put( "operation.mustache", ".go"); // the extension for each file to write
 
     supportingFiles.add(new SupportingFile("utils.mustache","pkg/api","utils.go")); 
-    supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations",".keep")); 
+    supportingFiles.add(new SupportingFile("keep.mustache","pkg/operations","doc.go")); 
 
    // this overloads the function of API Documentation templates
    // to allow for a main entry point to be created
