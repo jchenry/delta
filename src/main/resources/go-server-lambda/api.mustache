@@ -20,8 +20,15 @@ import (
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
 type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error)
 
+//{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}FuncInit - Returns a function that {{{summary}}}
+type {{nickname}}FuncInit func() func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error)
+
+
+
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} Handle{{nickname}} - Generates web handler for {{{summary}}}
-func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}Func) http.HandlerFunc {
+func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) string, {{nickname}} {{nickname}}FuncInit) http.HandlerFunc {
+	f := {{nickname}}()
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method !="{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}" {
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -78,7 +85,7 @@ func Handle{{nickname}}( pathParam func(ctx context.Context, paramName string) s
 		}
 		{{/isBodyParam}}
 	{{/allParams}}
-		result, err := {{nickname}}(r.Context(){{#allParams}}, {{paramName}}Param{{/allParams}})
+		result, err := f(r.Context(){{#allParams}}, {{paramName}}Param{{/allParams}})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

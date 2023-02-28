@@ -13,8 +13,10 @@ import (
 )
 {{#operations}}
 {{#operation}}
-func {{nickname}}(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error){
-    return api.Response{Code:http.StatusOK},nil
+func {{nickname}}() func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error){
+   return func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error){
+        return api.Response{Code:http.StatusOK},nil
+    }
 }
 {{/operation}}
 {{/operations}}

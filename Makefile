@@ -1,17 +1,18 @@
-.PHONY: all build clean
-
+.PHONY: all build clean docker
 
 GOFMT=$(shell which gofmt)
 
-build:
-	mvn package 
+build: docker
+ 
+mvn-package:
+	mvn package
+
 clean:   
 	rm -rf target 
 	rm -rf out
 
 docker: 
 	docker build -t r.j5y.xyz/delta:latest . 
-# docker build -t diskstation:5000/linklist .
 
 docker-run:
 	docker run --rm \
@@ -19,9 +20,7 @@ docker-run:
 	-i /local/spec/openapi.yaml \
 	-g go-server-lambda \
 	-o /local/out/generated
-
 	$(GOFMT) -w ./out/generated
-
 
 docker-operations:
 	docker run --rm \
