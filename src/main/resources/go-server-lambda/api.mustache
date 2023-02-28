@@ -11,8 +11,11 @@ import (
 {{#operations}}{{#operation}}{{#allParams}}
 {{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}
 {{#isArray}}{{#items}}{{#isModel}}"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/{{sourceFolder}}/model"{{/isModel}}{{/items}}{{/isArray}}
-{{/allParams}}{{/operation}}{{/operations}}{{#operations}}{{#operation}}
+{{/allParams}}{{/operation}}{{/operations}}
 )
+
+{{#operations}}{{#operation}}
+
 
 //{{#isDeprecated}}DEPRECATED{{/isDeprecated}} {{nickname}}Func - {{{summary}}}
 type {{nickname}}Func func(ctx context.Context{{#allParams}}, {{paramName}} {{> data_type}}{{/allParams}})(api.Response, error)
