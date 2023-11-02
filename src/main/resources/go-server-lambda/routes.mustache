@@ -1,14 +1,25 @@
 {{>partial_header}}
-package {{packageName}}
+package generated
 
+import "context"
 import "net/http"
+import 	"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/internal/generated/api"
 
 
-func Routes(register func(method, pattern string, fn http.HandlerFunc)){
-
-{{#operations}}
-{{#operation}}
-// {{nickname}}
-{{/operation}}
-{{/operations}}
+func RegisterRoutes(
+    register func(method, pattern string, fn http.HandlerFunc),
+    param func(ctx context.Context, paramName string)string,
+{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}} {{nickname}} api.{{nickname}}FuncInit,
+    {{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+    ){
+{{#apiInfo}}{{#apis}}
+{{#operations}}{{#operation}}register("{{#lambda.uppercase}}{{httpMethod}}{{/lambda.uppercase}}",  "{{path}}", api.Handle{{nickname}}(param, {{nickname}}))
+{{/operation}}{{/operations}}
+    {{/apis}}{{/apiInfo}}
 }
+
+/*
+// Example call
+RegisterRoutes(register, param,
+{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}  operations.{{nickname}},
+{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}})*/
